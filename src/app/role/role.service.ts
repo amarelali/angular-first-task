@@ -9,13 +9,13 @@ export class RoleService {
   private roles: IRole[] = DATA.roles;
   private permissions: IPermission[] = DATA.permissions;
 
-  // getRoles(): IRole[] {
-  //   return [...this.roles];
-  // }
+  getRoles(): IRole[] {
+    return [...this.roles];
+  }
 
-  // getPermissions(): IPermission[] {
-  //   return [...this.permissions];
-  // }
+  getPermissions(): IPermission[] {
+    return [...this.permissions];
+  }
 
   addRole(role: IRole): void {
     this.roles.push(role);

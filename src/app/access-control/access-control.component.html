@@ -1,0 +1,26 @@
+<div class="container mt-4">
+  <h2>Access Control Settings</h2>
+
+  <table class="table table-bordered table-hover mt-3">
+    <thead class="table-light">
+      <tr>
+        <th>Role</th>
+        <th *ngFor="let permission of allPermissions">{{ permission.name }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let role of roles">
+        <td>{{ role.name }}</td>
+        <td *ngFor="let permission of allPermissions">
+          <input
+            type="checkbox"
+            [checked]="hasPermission(role, permission)"
+            (change)="togglePermission(role, permission)"
+          />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="btn btn-primary mt-3" (click)="savePermissions()">Save Changes</button>
+</div>
