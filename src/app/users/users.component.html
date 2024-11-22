@@ -1,0 +1,57 @@
+<div class="user-roles-table">
+  <h2>User Roles</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.name }}</td>
+        <td>
+          {{getUserRoleById(user.role)}}
+        </td>
+        <td>
+          <button (click)="openModal('changerole',user)">Change Role</button>
+          <button (click)="onDeleteUser(user)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <button class="btn btn-primary" (click)="openModal('adduser')">Add User</button>
+
+  <app-popup title="Add User" [id]="'adduser'" *ngIf="showAddUserComponent">
+    <form class="flex flex-col" #form="ngForm">
+      <div class="mb-3 flex gap-2">
+        <label for="name">User Name</label>
+        <input type="text" placeholder="Name" name="name" id="name" [(ngModel)]="newUser.name" required>
+      </div>
+      <div class="mb-3 flex gap-2">
+        <label for="role">Role</label>
+        <select required name="role" id="role" [(ngModel)]="newUser.role">
+          <option value="" disable>Select a role</option>
+          <option value="1">Admin</option>
+          <option value="2">Editor</option>
+          <option value="3">Viewer</option>
+        </select>
+      </div>
+    </form>
+    <button type="button" class="btn btn-primary" modal-footer (click)="onAddUser(form)">Save changes</button>
+  </app-popup>
+  <app-popup title="Change Role" [id]="'changerole'" *ngIf="showChangeRoleComponent">
+    <form class="flex flex-col" #formChangeRole="ngForm">
+      <div class="mb-3 flex gap-2">
+        <label for="role">Role</label>
+        <select required name="role" id="role" [(ngModel)]="selectedUser!.role">
+          <option value="1">Admin</option>
+          <option value="2">Editor</option>
+          <option value="3">Viewer</option>
+        </select>
+      </div>
+    </form>
+    <button type="button" class="btn btn-primary" modal-footer (click)="onRoleChange(selectedUser,formChangeRole)">Save changes</button>
+  </app-popup>
+</div>
