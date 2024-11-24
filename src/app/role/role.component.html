@@ -18,9 +18,9 @@
       </tr>
     </tbody>
   </table>
-  <button class="btn btn-primary" (click)="openModal('addrole')">Add Role</button>
+  <!-- <button class="btn btn-primary" (click)="openModal('addrole')">Add Role</button> -->
 
-  <app-popup title="Add Role" [id]="'addrole'" *ngIf="showAddRoleComponent">
+  <!-- <app-popup title="Add Role" [id]="'addrole'" *ngIf="showAddRoleComponent">
     <form class="flex flex-col" #form="ngForm">
       <div class="mb-3 flex gap-2">
         <label for="role">Role</label>
@@ -37,7 +37,7 @@
       </div>
     </form>
     <button type="button" class="btn btn-primary" modal-footer (click)="onAddRole(form)">Save changes</button>
-  </app-popup>
+  </app-popup> -->
   <app-popup title="Change Role" [id]="'changerole'" *ngIf="showChangePermissionsComponent">
     <form class="flex flex-col" #formChangeRole="ngForm">
       <div class="mb-3 flex gap-2">

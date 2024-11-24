@@ -15,7 +15,7 @@ export class AccessControlComponent {
   allPermissions: IPermission[] = [];
 
   constructor(private roleService: RoleService,) {
-    this.roles = this.roleService.getRoles();
+    // this.roles = this.roleService.getRoles();
     this.allPermissions = this.roleService.getPermissions();
   }
 
@@ -35,7 +35,7 @@ export class AccessControlComponent {
   }
 
   savePermissions(): void {
-    this.roles = this.roleService.getRoles();
+    // this.roles = this.roleService.getRoles();
     console.log('savePermissions roles:', this.roles);
     alert('Permissions updated successfully!');
   }

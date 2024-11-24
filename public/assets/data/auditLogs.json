@@ -1,0 +1,26 @@
+[
+  {
+    "username": "amarelali",
+    "actionType": "edit",
+    "contentID": "1",
+    "timestamp": "2024-11-22 10:00:00"
+  },
+  {
+    "username": "shazaelali",
+    "actionType": "delete",
+    "contentID": "2",
+    "timestamp": "2024-11-22 11:00:00"
+  },
+  {
+    "username": "shazaelali",
+    "actionType": "create",
+    "contentID": "3",
+    "timestamp": "2024-11-22 12:00:00"
+  },
+  {
+    "username": "amarelali",
+    "actionType": "delete",
+    "contentID": "4",
+    "timestamp": "2024-11-22 13:00:00"
+  }
+]

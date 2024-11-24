@@ -1,16 +1,20 @@
 import { Injectable } from '@angular/core';
 import { IRole, IPermission } from '../interfaces/role.models';
-import { DATA } from "../data/data";
-
+import { DATA } from "../data";
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class RoleService {
   private roles: IRole[] = DATA.roles;
   private permissions: IPermission[] = DATA.permissions;
+  private dataUrl = "assets/data/roles.json";
 
-  getRoles(): IRole[] {
-    return [...this.roles];
+  constructor(private http: HttpClient) { }
+
+  getRoles(): Observable<IRole[]> {
+    return this.http.get<IRole[]>(this.dataUrl);
   }
 
   getPermissions(): IPermission[] {

@@ -1,4 +1,4 @@
-import { IPermission, IRole } from "../interfaces/role.models";
+import { IPermission, IRole } from "./interfaces/role.models";
 
 export const ROLES: IRole[] = [
   { id: '1', name: 'Admin', permissions: [{ id: '1', name: 'Create' }, { id: '2', name: 'Delete' }] },
