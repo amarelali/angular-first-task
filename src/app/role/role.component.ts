@@ -29,7 +29,7 @@ export class RoleComponent implements OnInit {
 
 
   isCheckedInputInEditRole(permission: Partial<IPermission>): boolean {
-    console.log(`${this.currentRole?.id} - ${this.currentRole?.name} - ${this.currentRole?.permissions.map(e=> e.name)}`);
+    console.log(`${this.currentRole?.id} - ${this.currentRole?.name} - ${this.currentRole?.permissions.map(e => e.name)}`);
     return !!this.currentRole!.permissions.find(currentPermission => currentPermission.name === permission.name)
   }
   constructor(private cdr: ChangeDetectorRef, private userService: userService, private roleService: RoleService) { }
@@ -90,11 +90,11 @@ export class RoleComponent implements OnInit {
       id: this.currentRole!.id,
       name: form.value.role,
       permissions: [
-        {
-          id: this.currentRole!.id,
-          name: this.currentRole!.permissions.map(perms => perms.name).join(', ')
-        }, ...permissions]
+        ...this.currentRole!.permissions.map(perms => ({id:perms.id, name:perms.name}))
+        , ...permissions]
     };
+    console.log("newObject : ", newObject);
+    console.log("permissions : ", permissions);
     if (form.valid) {
       this.roleService.updateRole(newObject);
       this.roles = this.roleService.updateRole(newObject)
