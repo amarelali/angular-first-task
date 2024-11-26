@@ -16,7 +16,9 @@ export class AccessControlComponent {
 
   constructor(private roleService: RoleService,) {
     // this.roles = this.roleService.getRoles();
-    this.allPermissions = this.roleService.getPermissions();
+    // this.allPermissions = this.roleService.getPermissions();
+    this.roleService.getPermissions().subscribe(data => (this.allPermissions = data));
+
   }
 
 

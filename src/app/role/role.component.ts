@@ -3,7 +3,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import * as bootstrap from 'bootstrap';
 import { IPermission, IRole } from '../interfaces/role.models';
 import { userService } from '../users/user.service';
-import { NgFor, NgIf } from '@angular/common';
+import { JsonPipe, NgFor, NgIf } from '@angular/common';
 import { PopupComponent } from '../popup/popup.component';
 import { RoleService } from './role.service';
 import { IUser } from '../interfaces/users.models';
@@ -29,6 +29,7 @@ export class RoleComponent implements OnInit {
 
 
   isCheckedInputInEditRole(permission: Partial<IPermission>): boolean {
+    console.log(`${this.currentRole?.id} - ${this.currentRole?.name} - ${this.currentRole?.permissions.map(e=> e.name)}`);
     return !!this.currentRole!.permissions.find(currentPermission => currentPermission.name === permission.name)
   }
   constructor(private cdr: ChangeDetectorRef, private userService: userService, private roleService: RoleService) { }
@@ -53,9 +54,8 @@ export class RoleComponent implements OnInit {
   }
 
   openModal(id: string, roleId?: string) {
-    console.log("open modal...");
     this.currentRole = roleId ? this.roles.find(role => role.id === roleId) || null : null;
-    console.log("this.currentRole ", this.currentRole);
+    console.log("this.currentRole ", this.currentRole); //jebet data
     setTimeout(() => {
       const modalElement = document.getElementById('modal-' + id);
       if (modalElement) {
@@ -69,6 +69,7 @@ export class RoleComponent implements OnInit {
         this.showChangePermissionsComponent = true;
       }
     })
+    console.log("this.currentRole after", this.currentRole); //jebet data
   }
   closeModal(id: string, form: NgForm): void {
     if (this.modalInstance) {
@@ -76,7 +77,6 @@ export class RoleComponent implements OnInit {
       this.cdr.detectChanges();
     }
     form.reset();
-    this.currentRole = null;
     this.checkedPermissions = [];
     if (id === 'addrole') {
       this.showAddRoleComponent = false;
@@ -86,7 +86,7 @@ export class RoleComponent implements OnInit {
   }
   editRole(form: NgForm) {
     const permissions = this.checkedPermissions.map(permission => this.roleService.getPermissionNameById(permission)).filter(permissionName => permissionName !== undefined);
-    const newObject = {
+    const newObject: IRole = {
       id: this.currentRole!.id,
       name: form.value.role,
       permissions: [
@@ -96,11 +96,11 @@ export class RoleComponent implements OnInit {
         }, ...permissions]
     };
     if (form.valid) {
-      this.roleService.updateRole(newObject)
-      this.setOrUpdateRoles();
+      this.roleService.updateRole(newObject);
+      this.roles = this.roleService.updateRole(newObject)
+      // this.setOrUpdateRoles();
     }
     this.closeModal("addrole", form);
-
   }
   displayedRoles(permissions: IPermission[]): string {
     return permissions.map(permission => permission.name).join(', ');
@@ -113,7 +113,15 @@ export class RoleComponent implements OnInit {
     this.roleService.addRole({
       id: Math.random().toString(), name: form.value.role,
       permissions
+    }).subscribe({
+      next: (addedRole) => {
+        console.log('Role added successfully:', addedRole);
+      },
+      error: (err) => {
+        console.error('Error adding role:', err);
+      }
     });
+
     this.setOrUpdateRoles(); //update roles
     this.closeModal("addrole", form);
   }
