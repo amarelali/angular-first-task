@@ -52,7 +52,6 @@ export class RoleComponent implements OnInit {
 
   openModal(id: string, roleId?: string) {
     this.currentRole = roleId ? this.roles.find(role => role.id === roleId) || null : null;
-    console.log("this.currentRole ", this.currentRole); //jebet data
     setTimeout(() => {
       const modalElement = document.getElementById('modal-' + id);
       if (modalElement) {
@@ -66,7 +65,6 @@ export class RoleComponent implements OnInit {
         this.showChangePermissionsComponent = true;
       }
     })
-    console.log("this.currentRole after", this.currentRole); //jebet data
   }
   closeModal(id: string, form: NgForm): void {
     if (this.modalInstance) {
