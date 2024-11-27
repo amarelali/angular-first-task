@@ -12,11 +12,13 @@ import { AuditLogs } from './audit.service';
   styleUrl: './audit.component.css'
 })
 export class AuditComponent {
-  search: string = ''
+  search = ''
   auditLog: IAudit[] = []
 
   constructor(private auditService: AuditLogs) {
-    this.auditLog = this.auditService.getAudits();
+    this.auditService.getAudits().subscribe({
+      next: (audits) => this.auditLog = audits,
+    });
   }
   filter(): IAudit[] {
     return this.auditLog.filter(auditLog =>
