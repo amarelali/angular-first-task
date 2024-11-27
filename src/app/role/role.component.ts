@@ -46,9 +46,6 @@ export class RoleComponent implements OnInit {
     this.roleService.getRoles().subscribe(
       (data: IRole[]) => {
         this.roles = data; // Assign fetched data
-      },
-      (error) => {
-        console.error('Error fetching roles:', error);
       }
     );
   }
@@ -113,20 +110,18 @@ export class RoleComponent implements OnInit {
     return this.userService.roleName(roleId);
   }
   onAddRole(form: NgForm) {
-    const permissions = this.checkedPermissions.map(permission => this.roleService.getPermissionNameById(permission.name)).filter(permissionName => permissionName !== undefined);
-    this.roleService.addRole({
-      id: Math.random().toString(), name: form.value.role,
+    const permissions = this.checkedPermissions.filter(permissionName => permissionName !== undefined);
+    const newRole = {
+      id: Math.random().toString(),
+      name: form.value.role,
       permissions
-    }).subscribe({
-      next: (addedRole) => {
-        console.log('Role added successfully:', addedRole);
-      },
-      error: (err) => {
-        console.error('Error adding role:', err);
+    }
+    this.roleService.addRole(newRole).subscribe({
+      next: () => {
+        this.roles.push(newRole);
+        console.log('Role added successfully');
       }
     });
-
-    this.setOrUpdateRoles(); //update roles
     this.closeModal("addrole", form);
   }
 
