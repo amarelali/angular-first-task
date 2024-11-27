@@ -47,9 +47,7 @@
       <div class="permissions" *ngFor="let permission of allPermissions">
         <div class="form-check">
           <input class="form-check-input" type="checkbox" [value]="permission.id" id="permission-{{permission.id}}"
-            (change)="onPermissionChange($event, permission.id)"
-            [checked]="isCheckedInputInEditRole(permission)"
-            >
+            (change)="onPermissionChange($event, permission.id)" [checked]="isCheckedInputInEditRole(permission)">
           <label class="form-check-label" for="permission-{{permission.id}}">
             {{permission.name}}
           </label>

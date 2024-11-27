@@ -3,11 +3,10 @@ import { FormsModule, NgForm } from '@angular/forms';
 import * as bootstrap from 'bootstrap';
 import { IPermission, IRole } from '../interfaces/role.models';
 import { userService } from '../users/user.service';
-import { JsonPipe, NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { PopupComponent } from '../popup/popup.component';
 import { RoleService } from './role.service';
 import { IUser } from '../interfaces/users.models';
-import { DATA } from '../data';
 
 @Component({
   selector: 'app-role',
@@ -24,12 +23,11 @@ export class RoleComponent implements OnInit {
   roles: IRole[] = [];
   users: IUser[] = [];
   allPermissions: IPermission[] = [];
-  checkedPermissions: string[] = [];
+  checkedPermissions: { id: string; name: string; }[] = [];
   currentRole: IRole | null = null
-
+  selectedPermissions: string[] = [];
 
   isCheckedInputInEditRole(permission: Partial<IPermission>): boolean {
-    console.log(`${this.currentRole?.id} - ${this.currentRole?.name} - ${this.currentRole?.permissions.map(e => e.name)}`);
     return !!this.currentRole!.permissions.find(currentPermission => currentPermission.name === permission.name)
   }
   constructor(private cdr: ChangeDetectorRef, private userService: userService, private roleService: RoleService) { }
@@ -37,7 +35,10 @@ export class RoleComponent implements OnInit {
   ngOnInit(): void {
     // this.roles = this.roleService.getRoles();
     this.users = this.userService.getUsers();
-    this.allPermissions = DATA.permissions;
+    this.roleService.getPermissions().subscribe({
+      next: (response: IPermission[]) => { this.allPermissions = response }
+    });
+
     this.setOrUpdateRoles();
   }
 
@@ -45,7 +46,6 @@ export class RoleComponent implements OnInit {
     this.roleService.getRoles().subscribe(
       (data: IRole[]) => {
         this.roles = data; // Assign fetched data
-        console.log('Roles fetched:', this.roles);
       },
       (error) => {
         console.error('Error fetching roles:', error);
@@ -76,40 +76,44 @@ export class RoleComponent implements OnInit {
       this.modalInstance.hide();
       this.cdr.detectChanges();
     }
-    form.reset();
     this.checkedPermissions = [];
     if (id === 'addrole') {
       this.showAddRoleComponent = false;
     } else {
       this.showChangePermissionsComponent = false
     }
+    form.reset();
+  }
+  removeDuplicates = (array: IPermission[]) => {
+    const seen = new Set();
+    return array.filter(item => {
+      if (seen.has(item.id)) {
+        return false; // Skip duplicates
+      }
+      seen.add(item.id);
+      return true; // Include unique items
+    });
   }
   editRole(form: NgForm) {
-    const permissions = this.checkedPermissions.map(permission => this.roleService.getPermissionNameById(permission)).filter(permissionName => permissionName !== undefined);
-    const newObject: IRole = {
+    const updatedPermissions = this.removeDuplicates([...this.checkedPermissions, ...this.currentRole!.permissions]);
+    const roleObject: IRole = {
       id: this.currentRole!.id,
       name: form.value.role,
-      permissions: [
-        ...this.currentRole!.permissions.map(perms => ({id:perms.id, name:perms.name}))
-        , ...permissions]
-    };
-    console.log("newObject : ", newObject);
-    console.log("permissions : ", permissions);
-    if (form.valid) {
-      this.roleService.updateRole(newObject);
-      this.roles = this.roleService.updateRole(newObject)
-      // this.setOrUpdateRoles();
+      permissions: updatedPermissions
     }
-    this.closeModal("addrole", form);
+    if (form.valid) {
+      this.roles = this.roleService.updateRole(roleObject)
+    }
+    this.closeModal('changerole', form)
   }
   displayedRoles(permissions: IPermission[]): string {
-    return permissions.map(permission => permission.name).join(', ');
+    return permissions.map(permission => permission.name).join(', ') || 'N/A';
   }
   getUserRoleById(roleId: string): string {
     return this.userService.roleName(roleId);
   }
   onAddRole(form: NgForm) {
-    const permissions = this.checkedPermissions.map(permission => this.roleService.getPermissionNameById(permission)).filter(permissionName => permissionName !== undefined);
+    const permissions = this.checkedPermissions.map(permission => this.roleService.getPermissionNameById(permission.name)).filter(permissionName => permissionName !== undefined);
     this.roleService.addRole({
       id: Math.random().toString(), name: form.value.role,
       permissions
@@ -127,11 +131,15 @@ export class RoleComponent implements OnInit {
   }
 
   onPermissionChange(event: Event, permissionId: string) {
-    const isChecked = (event.target as HTMLInputElement).checked;
-    if (isChecked) {
-      this.checkedPermissions.push(permissionId);
+    const inputElement = (event.target as HTMLInputElement);
+    const { checked, value } = inputElement;
+    if (checked) {
+      this.checkedPermissions.push({ id: value, name: this.roleService.getPermissionNameById(value)!.name });
     } else {
-      this.checkedPermissions = this.checkedPermissions.filter(id => id !== permissionId);
+      if (this.currentRole) {
+        this.currentRole!.permissions = this.currentRole?.permissions.filter(permission => permission.id != permissionId);
+      }
+      this.checkedPermissions = this.checkedPermissions.filter(permission => permission.id != permissionId);
     }
   }
 }
