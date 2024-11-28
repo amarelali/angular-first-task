@@ -90,18 +90,13 @@ export class UsersComponent {
     this.userService.deleteUser(user.id);
     this.userService.getUsers().subscribe(
       {
-        next: (data: IUser[]) => this.users = data
+        next: () => this.users = this.users.filter(u => u.id !== user.id)
       }
     )
   }
   onRoleChange(user: IUser | null, formChangeRole: NgForm): void {
     if (formChangeRole.valid) {
-      this.userService.updateUserRole(user!.id, formChangeRole == null ? this.selectedUser!.role : formChangeRole.value.role);
-      this.userService.getUsers().subscribe(
-        {
-          next: (data: IUser[]) => this.users = data
-        }
-      )
+      this.users = this.userService.updateUserRole(user!.id, formChangeRole == null ? this.selectedUser!.role : formChangeRole.value.role);
       this.closeModal('changerole', formChangeRole);
     }
   }
