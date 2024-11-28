@@ -66,19 +66,21 @@ export class UsersComponent {
     } else { this.showChangeRoleComponent = false }
   }
   onAddUser(form: NgForm): void {
-    console.log("testtt..");
+
+
     if (form.valid) {
       const { name, role } = this.newUser;
-      this.userService.addUser({
+      const new_User = {
         id: Math.random().toString(),
         name: name!,
         role: role!,
         lastLogin: "19/11/2024",
-      }).subscribe({
-        next: (data: IUser) => {
-          console.log("test...");
-          this.users.push(data);
-          console.log("data... ", data);
+      }
+      this.userService.addUser(
+        new_User
+      ).subscribe({
+        next: () => {
+          this.users = [...this.users, new_User]
         }
       });
       this.closeModal('adduser', form);
