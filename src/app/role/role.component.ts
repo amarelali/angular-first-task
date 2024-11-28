@@ -34,7 +34,11 @@ export class RoleComponent implements OnInit {
 
   ngOnInit(): void {
     // this.roles = this.roleService.getRoles();
-    this.users = this.userService.getUsers();
+    this.userService.getUsers().subscribe({
+      next: (data: IUser[]) => {
+        this.users = data;
+      }
+    });
     this.roleService.getPermissions().subscribe({
       next: (response: IPermission[]) => { this.allPermissions = response }
     });

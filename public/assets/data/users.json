@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "name": "Amar El Ali",
+    "role": "1",
+    "lastLogin": "20/11/2024"
+  },
+  {
+    "id": "2",
+    "name": "Shaza El Ali",
+    "role": "1",
+    "lastLogin": "20/11/2024"
+  },
+  {
+    "id": "3",
+    "name": "AbdulRahman El Ali",
+    "role": "2",
+    "lastLogin": "20/11/2024"
+  },
+  {
+    "id": "4",
+    "name": "AbdulNour El Ali",
+    "role": "3",
+    "lastLogin": "20/11/2024"
+  }
+]
