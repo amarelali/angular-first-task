@@ -19,6 +19,11 @@
           <button (click)="onDeleteUser(user)">Delete</button>
         </td>
       </tr>
+      @if(users.length === 0){
+      <tr>
+        <td colspan="4" class="text-center">No users yet</td>
+      </tr>
+      }
     </tbody>
   </table>
   <button class="btn btn-primary" (click)="openModal('adduser')">Add User</button>
