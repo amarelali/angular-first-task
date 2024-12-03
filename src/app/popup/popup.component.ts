@@ -1,22 +1,17 @@
-import { NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-popup',
   standalone: true,
-  imports: [NgIf],
+  imports: [],
   templateUrl: './popup.component.html',
   styleUrl: './popup.component.css'
 })
 export class PopupComponent implements OnChanges {
-  @Input() title: string = 'Title';
+  @Input() title = 'Title';
   @Input() id!: string;
-  formattedId: string = ""
+  formattedId = ""
 
-  ngOnInit(): void {
-    this.formattedId = `modal-${this.id}`;
-    console.log('ID Input: ngOnInit', this.formattedId);
-  }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['id'] && changes['id'].currentValue) {
       this.formattedId = `modal-${this.id}`;
