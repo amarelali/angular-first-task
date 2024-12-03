@@ -1,40 +1,54 @@
 import { Injectable } from '@angular/core';
-import { IRole, IPermission } from '../interfaces/role.models';
+import { IRole } from '../interfaces/role.models';
 import { HttpClient } from '@angular/common/http';
-import { Observable, } from 'rxjs';
+import { BehaviorSubject, Observable, tap, } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class RoleService {
-  private roles: IRole[] = [];
-  private permissions: IPermission[] = [];
+  private readonly storageKeyRoles = 'roles';
+  private rolesSubject: BehaviorSubject<IRole[]>;
+
   private dataUrl = "assets/data";
 
   constructor(private http: HttpClient) {
-    this.getRoles().subscribe(data => (this.roles = data));
-    this.getPermissions().subscribe(data => (this.permissions = data));
+    this.fetchRolesFromServer().subscribe((roles) => {
+      this.rolesSubject.next(roles);
+    });
+    const savedRoles = this.getRolesFromLocalStorage();
+
+    this.rolesSubject = new BehaviorSubject<IRole[]>(savedRoles || []);
+  }
+  // Fetch roles from the JSON endpoint and save them to localStorage
+  fetchRolesFromServer(): Observable<IRole[]> {
+    return this.http.get<IRole[]>(this.dataUrl + '/roles.json').pipe(
+      tap((roles: IRole[]) => {
+        this.setRolesToLocalStorage(roles);
+      })
+    );
   }
 
+  // Observable to listen for role changes
   getRoles(): Observable<IRole[]> {
-    return this.http.get<IRole[]>(this.dataUrl + "/roles.json");
+    return this.rolesSubject.asObservable();
   }
 
-  getPermissions(): Observable<IPermission[]> {
-    return this.http.get<IPermission[]>(this.dataUrl + "/permissions.json");
-  }
-  addRole(newRole: IRole): Observable<IRole> {
-    return this.http.post<IRole>(this.dataUrl + '/roles.json', newRole);
-  }
-  updateRole(updatedRole: IRole): IRole[] {
-    const index = this.roles.findIndex(r => r.id === updatedRole.id);
-    console.log("index...", index);
-    if (index !== -1) {
-      this.roles[index] = updatedRole;
-    }
-    return this.roles;
+  // Manually update roles
+  updateRoles(roles: IRole[]): void {
+    this.setRolesToLocalStorage(roles);
+    this.rolesSubject.next(roles); // Notify all subscribers about the change
   }
 
-  getPermissionNameById(id: string) {
-    return this.permissions.find(permission => permission.id === id);
+  // Helper to get roles from localStorage
+  private getRolesFromLocalStorage(): IRole[] {
+    const rolesJson = localStorage.getItem(this.storageKeyRoles);
+    return rolesJson ? JSON.parse(rolesJson) : [];
   }
+
+  // Helper to save roles to localStorage
+  private setRolesToLocalStorage(roles: IRole[]): void {
+    localStorage.setItem(this.storageKeyRoles, JSON.stringify(roles));
+  }
+
+
 }

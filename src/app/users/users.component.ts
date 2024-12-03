@@ -25,11 +25,10 @@ export class UsersComponent {
   selectedUser: IUser | null = null;
 
   constructor(private cdr: ChangeDetectorRef, private userService: userService, private roleService: RoleService) {
-    this.roleService.getRoles().subscribe(
-      {
-        next: (data: IRole[]) => this.roles = data
-      }
-    )
+    this.roleService.getRoles().subscribe((currentRoles) => {
+      this.roles = currentRoles;
+    });
+
     this.userService.getUsers().subscribe(
       {
         next: (data: IUser[]) => {
@@ -38,6 +37,7 @@ export class UsersComponent {
       }
     )
   }
+
   openModal(id: string, user?: IUser): void {
     if (user) {
       this.selectedUser = user;

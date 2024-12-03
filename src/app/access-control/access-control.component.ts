@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IPermission, IRole } from '../interfaces/role.models';
 import { RoleService } from '../role/role.service';
 import { NgFor } from '@angular/common';
+import { PermissionService } from '../services/permissionService';
 
 @Component({
   selector: 'app-access-control',
@@ -14,13 +15,10 @@ export class AccessControlComponent {
   roles: IRole[] = [];
   allPermissions: IPermission[] = [];
 
-  constructor(private roleService: RoleService,) {
-    // this.roles = this.roleService.getRoles();
-    // this.allPermissions = this.roleService.getPermissions();
-    this.roleService.getPermissions().subscribe(data => (this.allPermissions = data));
-
+  constructor(private roleService: RoleService,private permissionService: PermissionService) {
+    this.permissionService.getPermissions().subscribe(data => (this.allPermissions = data));
+    this.roleService.getRoles().subscribe(data => (this.roles = data));
   }
-
 
   // Check if a role has a specific permission
   hasPermission(role: IRole, permission: IPermission): boolean {
@@ -37,8 +35,8 @@ export class AccessControlComponent {
   }
 
   savePermissions(): void {
-    // this.roles = this.roleService.getRoles();
     console.log('savePermissions roles:', this.roles);
+    localStorage.setItem("roles", JSON.stringify(this.roles));
     alert('Permissions updated successfully!');
   }
 }
