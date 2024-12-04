@@ -30,6 +30,7 @@ export class RoleService {
   // get role name by id
   getRoleNameById(id: string): string {
     return this.roleMap[id] || 'N/A';
+
   }
 
   // Fetch roles from the JSON endpoint and save them to localStorage
