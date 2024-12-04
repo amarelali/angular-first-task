@@ -1,42 +1,49 @@
 import { Injectable } from "@angular/core";
 import { IUser } from "../interfaces/users.models";
-import { IRole } from "../interfaces/role.models";
-import { Observable, } from 'rxjs';
+import { BehaviorSubject, Observable, tap, } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class userService {
-  private roles: IRole[] = [];
-  private users: IUser[] = [];
   private dataUrl = "assets/data";
-  private newUser: Partial<IUser> = {
-    name: '',
-    role: '',
-  };
-  private roleMap: { [key: string]: string } = {
-    "1": 'Admin',
-    "2": 'Editor',
-    "3": 'Viewer',
-  };
+  private userSubject: BehaviorSubject<IUser[]>;
+
+  private readonly storageKey = 'users';
   constructor(private http: HttpClient) {
-    this.getUsers().subscribe(data => (this.users = data));
+    this.fetchUsersFromServer().subscribe((users) => {
+      this.userSubject.next(users);
+    });
+    const savedUsers = this.getUsersFromLocalStorage();
+    this.userSubject = new BehaviorSubject<IUser[]>(savedUsers || [])
   }
+
+  // Observable to listen for role changes
   getUsers(): Observable<IUser[]> {
-    return this.http.get<IUser[]>(this.dataUrl + "/users.json");
+    return this.userSubject.asObservable();
   }
-  addUser(user: IUser): Observable<IUser> {
-    return this.http.post<IUser>(this.dataUrl + '/users.json', user);
+
+  fetchUsersFromServer(): Observable<IUser[]> {
+    return this.http.get<IUser[]>(this.dataUrl + "/users.json").pipe(
+      tap((users: IUser[]) => {
+        this.setUsersToLocalStorage(users);
+      })
+    );
   }
-  deleteUser(userId: string): void {
-    this.users = this.users.filter(user => user.id !== userId);
+  private setUsersToLocalStorage(users: IUser[]): void {
+    localStorage.setItem(this.storageKey, JSON.stringify(users))
   }
-  updateUserRole(userId: string, newRole: string): IUser[] {
-    this.users = this.users.map(u => { return u.id === userId ? { ...u, role: newRole } : u })
-    return this.users;
+  private getUsersFromLocalStorage(): IUser[] {
+    const usersJson = localStorage.getItem(this.storageKey);
+    return usersJson ? JSON.parse(usersJson) : [];
   }
-  roleName(roleId: string): string {
-    return this.roleMap[roleId] || 'N/A';
+
+  updateUsers(users: IUser[]) {
+    // update users inside local storage
+    this.setUsersToLocalStorage(users);
+    // update user object
+    this.userSubject.next(users);
   }
+
 }

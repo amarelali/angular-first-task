@@ -7,6 +7,13 @@ import { BehaviorSubject, Observable, tap, } from 'rxjs';
 })
 export class RoleService {
   private readonly storageKeyRoles = 'roles';
+
+  private readonly roleMap: Record<string, string> = {
+    "1": 'Admin',
+    "2": 'Editor',
+    "3": 'Viewer',
+  };
+
   private rolesSubject: BehaviorSubject<IRole[]>;
 
   private dataUrl = "assets/data";
@@ -19,6 +26,12 @@ export class RoleService {
 
     this.rolesSubject = new BehaviorSubject<IRole[]>(savedRoles || []);
   }
+
+  // get role name by id
+  getRoleNameById(id: string): string {
+    return this.roleMap[id] || 'N/A';
+  }
+
   // Fetch roles from the JSON endpoint and save them to localStorage
   fetchRolesFromServer(): Observable<IRole[]> {
     return this.http.get<IRole[]>(this.dataUrl + '/roles.json').pipe(

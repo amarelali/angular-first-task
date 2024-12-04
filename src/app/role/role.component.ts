@@ -108,8 +108,9 @@ export class RoleComponent implements OnInit {
     return permissions.map(permission => permission.name).join(', ') || 'N/A';
   }
   getUserRoleById(roleId: string): string {
-    return this.userService.roleName(roleId);
+    return this.roleService.getRoleNameById(roleId);
   }
+
   onAddRole(form: NgForm) {
     const permissions = this.checkedPermissions.filter(permissionName => permissionName !== undefined);
     const newRole = {

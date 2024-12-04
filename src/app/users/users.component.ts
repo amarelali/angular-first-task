@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { IUser } from '../interfaces/users.models';
 import { NgFor, NgIf } from '@angular/common';
 import { PopupComponent } from '../popup/popup.component';
@@ -15,7 +15,7 @@ import { RoleService } from '../role/role.service';
   templateUrl: './users.component.html',
   styleUrl: './users.component.css'
 })
-export class UsersComponent {
+export class UsersComponent implements OnInit {
   private modalInstance: bootstrap.Modal | null = null;
   showAddUserComponent = false;
   showChangeRoleComponent = false;
@@ -25,6 +25,9 @@ export class UsersComponent {
   selectedUser: IUser | null = null;
 
   constructor(private cdr: ChangeDetectorRef, private userService: userService, private roleService: RoleService) {
+  }
+
+  ngOnInit(): void {
     this.roleService.getRoles().subscribe((currentRoles) => {
       this.roles = currentRoles;
     });
@@ -37,7 +40,6 @@ export class UsersComponent {
       }
     )
   }
-
   openModal(id: string, user?: IUser): void {
     if (user) {
       this.selectedUser = user;
@@ -76,32 +78,22 @@ export class UsersComponent {
         role: role!,
         lastLogin: "19/11/2024",
       }
-      this.userService.addUser(
-        new_User
-      ).subscribe({
-        next: () => {
-          this.users = [...this.users, new_User]
-        }
-      });
+      this.userService.updateUsers([...this.users, new_User]);
       this.closeModal('adduser', form);
     }
   }
   onDeleteUser(user: IUser): void {
-    this.userService.deleteUser(user.id);
-    this.userService.getUsers().subscribe(
-      {
-        next: () => this.users = this.users.filter(u => u.id !== user.id)
-      }
-    )
+    // this.userService.deleteUser(user.id);
+    this.userService.updateUsers(this.users.filter(u => u.id !== user.id));
   }
   onRoleChange(user: IUser | null, formChangeRole: NgForm): void {
     if (formChangeRole.valid) {
-      this.users = this.userService.updateUserRole(user!.id, formChangeRole == null ? this.selectedUser!.role : formChangeRole.value.role);
+      this.userService.updateUsers(this.users.map(u => { return u.id === user!.id ? { ...u, role: formChangeRole == null ? this.selectedUser!.role : formChangeRole.value.role } : u }));
       this.closeModal('changerole', formChangeRole);
     }
   }
   getUserRoleById(roleId: string): string {
-    return this.userService.roleName(roleId);
+    return this.roleService.getRoleNameById(roleId);
   }
 
 }
