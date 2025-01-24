@@ -41,7 +41,7 @@
   <app-popup title="Change Role" [id]="'changerole'" *ngIf="showChangePermissionsComponent">
     <form class="flex flex-col" #formChangeRole="ngForm">
       <div class="mb-3 flex gap-2">
-        <label for="role">Role</label>
+        <label for="role">Role : </label>
         <input type="text" placeholder="Role" name="role" id="role" [(ngModel)]="currentRole!.name" required>
       </div>
       <div class="permissions" *ngFor="let permission of allPermissions">
