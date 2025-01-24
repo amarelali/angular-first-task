@@ -3,8 +3,11 @@
   "public": true,
   "builds": [
     {
-      "src": "src/main.ts",
-      "use": "@vercel/node"
+      "src": "angular.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/assignment"
+      }
     }
   ],
   "routes": [
